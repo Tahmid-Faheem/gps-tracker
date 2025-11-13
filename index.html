@@ -7,25 +7,28 @@
   <style>
     body { font-family: Arial; text-align: center; margin-top: 50px; }
     #coords { font-size: 24px; font-weight: bold; color: #333; }
+    #last-updated { font-size: 14px; color: #888; margin-top: 1em; }
   </style>
 </head>
 <body>
   <h2>Test 1</h2>
   <div id="coords">Loading GPS data...</div>
+  <div id="last-updated"></div>
 
   <script>
     async function fetchLocation() {
       try {
-        // Use absolute path to avoid 404
         const res = await fetch('/gps-tracker/data/location.json?nocache=' + new Date().getTime());
+        if (!res.ok) throw new Error("Fetch error");
         const data = await res.json();
         const { lat, lon } = data;
-
-        document.getElementById("coords").textContent = 
+        document.getElementById("coords").textContent =
           `Latitude: ${lat.toFixed(6)}, Longitude: ${lon.toFixed(6)}`;
+        document.getElementById("last-updated").textContent =
+          "Last updated: " + new Date().toLocaleTimeString();
       } catch (err) {
-        console.error("Error fetching GPS data:", err);
         document.getElementById("coords").textContent = "Waiting for GPS data...";
+        document.getElementById("last-updated").textContent = "";
       }
     }
 
