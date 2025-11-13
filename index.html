@@ -5,16 +5,8 @@
   <title>Live GPS Tracker</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      margin-top: 50px;
-    }
-    #coords {
-      font-size: 24px;
-      font-weight: bold;
-      color: #333;
-    }
+    body { font-family: Arial; text-align: center; margin-top: 50px; }
+    #coords { font-size: 24px; font-weight: bold; color: #333; }
   </style>
 </head>
 <body>
@@ -24,12 +16,11 @@
   <script>
     async function fetchLocation() {
       try {
-        // Fetch the JSON file from your repo
-        const res = await fetch('data/location.json?nocache=' + new Date().getTime());
+        // Use absolute path to avoid 404
+        const res = await fetch('/gps-tracker/data/location.json?nocache=' + new Date().getTime());
         const data = await res.json();
         const { lat, lon } = data;
 
-        // Display on the site
         document.getElementById("coords").textContent = 
           `Latitude: ${lat.toFixed(6)}, Longitude: ${lon.toFixed(6)}`;
       } catch (err) {
@@ -38,7 +29,6 @@
       }
     }
 
-    // Fetch every 2 seconds
     fetchLocation();
     setInterval(fetchLocation, 2000);
   </script>
