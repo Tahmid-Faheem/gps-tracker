@@ -19,18 +19,29 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
     async function fetchData() {
-      const res = await fetch('https://raw.githubusercontent.com/Tahmid-Faheem/gps-tracker/main/data/location.json');
-      const data = await res.json();
+      try {
+        const res = await fetch('https://raw.githubusercontent.com/Tahmid-Faheem/gps-tracker/main/data/location.json');
+        const data = await res.json();
 
-      document.getElementById("coords").innerText = 
-        `Latitude: ${data.lat.toFixed(6)}, Longitude: ${data.lon.toFixed(6)}`;
+        document.getElementById("coords").innerText = 
+          `Latitude: ${data.lat.toFixed(6)}, Longitude: ${data.lon.toFixed(6)}`;
 
-      const map = L.map('map').setView([data.lat, data.lon], 15);
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-      }).addTo(map);
-      L.marker([data.lat, data.lon]).addTo(map);
+        // Initialize or update map
+        if (!window.map) {
+          window.map = L.map('map').setView([data.lat, data.lon], 14);
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+          }).addTo(window.map);
+          window.marker = L.marker([data.lat, data.lon]).addTo(window.map);
+        } else {
+          window.map.setView([data.lat, data.lon], 14);
+          window.marker.setLatLng([data.lat, data.lon]);
+        }
+      } catch (e) {
+        document.getElementById("coords").innerText = "Waiting for GPS data...";
+      }
     }
+
     fetchData();
   </script>
 </body>
