@@ -1,48 +1,46 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>🚗 Live GPS Tracker</title>
-  <meta http-equiv="refresh" content="2">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <meta charset="UTF-8">
+  <title>Live GPS Tracker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body { font-family: Arial, sans-serif; text-align: center; margin-top: 40px; }
-    #map { height: 400px; width: 80%; margin: 20px auto; border-radius: 12px; }
-    #coords { font-size: 18px; margin-top: 10px; }
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 50px;
+    }
+    #coords {
+      font-size: 24px;
+      font-weight: bold;
+      color: #333;
+    }
   </style>
 </head>
 <body>
   <h2>🌍 Live GPS Tracker</h2>
-  <div id="map"></div>
-  <p id="coords">Loading...</p>
+  <div id="coords">Loading GPS data...</div>
 
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
-    async function fetchData() {
+    async function fetchLocation() {
       try {
-        const res = await fetch('https://raw.githubusercontent.com/Tahmid-Faheem/gps-tracker/main/data/location.json');
+        // Fetch the JSON file from your repo
+        const res = await fetch('data/location.json?nocache=' + new Date().getTime());
         const data = await res.json();
+        const { lat, lon } = data;
 
-        document.getElementById("coords").innerText = 
-          `Latitude: ${data.lat.toFixed(6)}, Longitude: ${data.lon.toFixed(6)}`;
-
-        // Initialize or update map
-        if (!window.map) {
-          window.map = L.map('map').setView([data.lat, data.lon], 14);
-          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-          }).addTo(window.map);
-          window.marker = L.marker([data.lat, data.lon]).addTo(window.map);
-        } else {
-          window.map.setView([data.lat, data.lon], 14);
-          window.marker.setLatLng([data.lat, data.lon]);
-        }
-      } catch (e) {
-        document.getElementById("coords").innerText = "Waiting for GPS data...";
+        // Display on the site
+        document.getElementById("coords").textContent = 
+          `Latitude: ${lat.toFixed(6)}, Longitude: ${lon.toFixed(6)}`;
+      } catch (err) {
+        console.error("Error fetching GPS data:", err);
+        document.getElementById("coords").textContent = "Waiting for GPS data...";
       }
     }
 
-    fetchData();
+    // Fetch every 2 seconds
+    fetchLocation();
+    setInterval(fetchLocation, 2000);
   </script>
 </body>
 </html>
